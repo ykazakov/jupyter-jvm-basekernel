@@ -24,6 +24,7 @@ public class JupyterOutputStream extends ByteArrayOutputStream {
     }
 
     public void retractEnv(ShellReplyEnvironment env) {
+    	flush();
         if (this.env == env)
             this.env = null;
     }

@@ -9,6 +9,8 @@ import java.io.InputStream;
 import java.io.PrintStream;
 import java.io.UnsupportedEncodingException;
 import java.nio.charset.Charset;
+import java.util.Timer;
+import java.util.TimerTask;
 
 public class JupyterIO {
     private final JupyterOutputStream jupyterOut;
@@ -29,9 +31,18 @@ public class JupyterIO {
         this.display = new DisplayStream();
 
         try {
-            this.out = new PrintStream(this.jupyterOut, true, encoding.name());
-            this.err = new PrintStream(this.jupyterErr, true, encoding.name());
+            this.out = new PrintStream(this.jupyterOut, false, encoding.name());
+            this.err = new PrintStream(this.jupyterErr, false, encoding.name());
             this.in = this.jupyterIn;
+            Timer t = new Timer(true);
+            t.schedule(new TimerTask() {
+				
+				@Override
+				public void run() {
+					out.flush();
+					err.flush();
+				}
+			}, 0, 1000);
         } catch (UnsupportedEncodingException e) {
             throw new RuntimeException("Couldn't lookup the charset by name even though it is already a charset...", e);
         }
